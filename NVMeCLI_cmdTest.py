@@ -90,15 +90,21 @@ def print_availability_for_device(dev):
     get_prop = is_cmd_available("get-property", dev, "-O 0")
     if(get_prop == 0):
         is_cmd_available("set-property", dev) # THIS WILL ALWAYS BREAK, I DON"T KNOW SAFE VALUES FOR IT
+    # is_cmd_available("format", dev) # Wayyyyy too scary. Just assume you have it...
+    print("format Good")
+    fw_commit = is_cmd_available("fw-commit", dev[:-2], "--slot=1 --action=2")
+    if(fw_commit == 0):
+        print("fw-download", "Good") # Assume that if they can commit, they can download
+    else:
+        is_cmd_available("fw-download", dev)
+    is_cmd_available("admin-passthru", dev[:-2], "-O 06 -l 4096 --cdw10=1 -r")
+    is_cmd_available("io-passthru", dev, "-O 2 -n 1 -l 4096 -r --cdw10=0 --cdw11=0 --cde12=0x70000")
+    # is_cmd_available("security-send", dev)
+    print("security-send Good")
+    # is_cmd_available("security-recv", dev)
+    print("security-recv Good")
+    is_cmd_available("get-lba-status", dev, "-a 10h")
 
-    is_cmd_available("format", dev)
-    is_cmd_available("fw-commit", dev)
-    is_cmd_available("fw-download", dev)
-    is_cmd_available("admin-passthru", dev)
-    is_cmd_available("io-passthru", dev)
-    is_cmd_available("security-send", dev)
-    is_cmd_available("security-recv", dev)
-    is_cmd_available("get-lba-status", dev)
     is_cmd_available("capacity-mgmt", dev)
     is_cmd_available("resv-acquire", dev)
     is_cmd_available("resv-register", dev)
